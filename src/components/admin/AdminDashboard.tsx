@@ -1,8 +1,10 @@
 'use client';
 
 import { Fragment, useMemo, useState } from 'react';
+import { signOut, useSession } from 'next-auth/react';
 import type { Quote } from '@/lib/supabase';
 import { useBroadcastLogout } from '@/hooks/useBroadcastLogout';
+import AdminHeader from '@/components/admin/AdminHeader';
 
 const STATUS_DOT: Record<Quote['status'], { color: string; label: string }> = {
   new: { color: '#16A35C', label: 'New' },
@@ -31,10 +33,11 @@ export default function AdminDashboard({
   loadError?: string | null;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { status } = useSession();
 
-  // Wire up cross-tab logout, ready for when auth lands next batch.
+  // When another tab logs out, drop this tab's session and bounce to login.
   useBroadcastLogout(() => {
-    // TODO: clear auth state + redirect once auth is implemented.
+    signOut({ callbackUrl: '/admin/login' });
   });
 
   const stats = useMemo(() => {
@@ -47,26 +50,28 @@ export default function AdminDashboard({
     return { total, newCount, thisWeek };
   }, [quotes]);
 
+  // While NextAuth resolves the session, show a light skeleton instead of the
+  // table (the route is already gated server-side, so this is purely cosmetic).
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white px-6 py-10">
+        <div className="max-w-6xl mx-auto animate-pulse space-y-6">
+          <div className="h-10 w-64 rounded-lg bg-white/5" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="h-24 rounded-2xl bg-white/5" />
+            <div className="h-24 rounded-2xl bg-white/5" />
+            <div className="h-24 rounded-2xl bg-white/5" />
+          </div>
+          <div className="h-64 rounded-2xl bg-white/5" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white px-6 py-10">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cobalt-500 via-lavender-500 to-coral-500 flex items-center justify-center font-bold text-white text-lg">
-            NW
-          </div>
-          <h1 className="text-2xl font-semibold">
-            NW Solutions —{' '}
-            <span className="bg-gradient-to-r from-cobalt-500 to-coral-500 bg-clip-text text-transparent">
-              Admin
-            </span>
-          </h1>
-        </div>
-
-        {/* Auth notice */}
-        <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 text-sm">
-          ⚠️ Authentication coming in next batch
-        </div>
+        <AdminHeader />
 
         {loadError && (
           <div className="mb-8 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm">

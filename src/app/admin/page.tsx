@@ -1,20 +1,27 @@
-import { createClient } from '@supabase/supabase-js';
-import type { Database, Quote } from '@/lib/supabase';
+import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { createAdminClient } from '@/lib/supabase';
+import type { Quote } from '@/lib/supabase';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import CSVImport from '@/components/admin/CSVImport';
 import RenovationUpload from '@/components/admin/RenovationUpload';
 
-// SSR: admin always fetches fresh data, never cached
+// SSR: admin always fetches fresh data, never cached.
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
-  // TODO: replace with service role in production
-  // The anon key only works here because of the temporary dev RLS policy
-  // ("Temp anon read for dev"). Reads will return [] until that policy exists.
-  const supabase = createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  // Defence in depth: middleware already gates /admin, but we re-check on the
+  // server so a direct render can never leak data without a valid session.
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect('/admin/login');
+  }
+
+  // Service-role client bypasses RLS, so reads work even though the anon key is
+  // (correctly) denied SELECT on quotes. This is the fix for the security hole:
+  // the privileged key stays server-side and never reaches the browser.
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from('quotes')
@@ -36,4 +43,3 @@ export default async function AdminPage() {
     </>
   );
 }
-

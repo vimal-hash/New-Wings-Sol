@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import { chunkDirFor, chunkPath, ensureDir } from '@/lib/upload-store';
+import { getAdminSession } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,6 +11,13 @@ export const dynamic = 'force-dynamic';
 const MAX_CHUNK_BYTES = 2 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
+  // Defence in depth: middleware already blocks unauthenticated requests, but
+  // we re-check here so the handler can never run without a valid admin session.
+  const session = await getAdminSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const form = await req.formData();
     const chunk = form.get('chunk');

@@ -100,11 +100,11 @@ export default function Footer() {
             <span className="text-sm text-fg">{CONTACT.phone}</span>
           </a>
           <a
-            href={`mailto:${CONTACT.email1}`}
+            href={`mailto:${CONTACT.email}`}
             className="flex items-center gap-3 hover:text-coral-500 transition-colors group"
           >
             <Mail className="w-5 h-5 text-coral-500" />
-            <span className="text-sm text-fg truncate">{CONTACT.email1}</span>
+            <span className="text-sm text-fg truncate">{CONTACT.email}</span>
           </a>
           <div className="flex items-center gap-3">
             <MapPin className="w-5 h-5 text-emerald-500" />

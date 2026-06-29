@@ -166,8 +166,8 @@ export const FAQS = [
 
 export const CONTACT = {
   phone: '+91 9444546390',
-  email1: 'support@newwingssolutions.com',
-  email2: 'wingsent07@gmail.com',
+  // Single primary inbox. Website enquiries are also emailed here automatically.
+  email: 'wingsent07@gmail.com',
   address: 'Chennai, Tamil Nadu, India',
 };
 

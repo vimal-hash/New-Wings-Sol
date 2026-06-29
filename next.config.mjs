@@ -52,6 +52,12 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
   },
+  // Force HTTPS for a year (incl. subdomains). Harmless on http://localhost —
+  // browsers ignore HSTS on non-secure/loopback origins.
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=31536000; includeSubDomains',
+  },
 ];
 
 /** @type {import('next').NextConfig} */

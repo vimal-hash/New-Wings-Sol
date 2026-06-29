@@ -32,7 +32,7 @@ export const localBusinessSchema = {
   description:
     'Cinema equipment dealer and theatre renovation company in Chennai',
   telephone: '+91-9444546390',
-  email: CONTACT.email1,
+  email: CONTACT.email,
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Chennai',

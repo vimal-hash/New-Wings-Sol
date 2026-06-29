@@ -1,20 +1,22 @@
-// Placeholder auth hook. Replaced with real NextAuth in Batch 4.
-// Exists now so components that depend on auth can import a stable shape.
+'use client';
 
-export interface AuthUser {
-  id: string;
-  name: string;
-  email: string;
-}
+import { useSession, signIn, signOut } from 'next-auth/react';
 
-export interface AuthState {
-  user: AuthUser | null;
-  isLoading: boolean;
-  isAdmin: boolean;
-}
+/**
+ * Thin convenience wrapper over NextAuth's useSession for admin components.
+ * Requires a <SessionProvider> ancestor (provided by the admin layout).
+ */
+export function useAuth() {
+  const { data: session, status } = useSession();
 
-export function useAuth(): AuthState {
-  return { user: null, isLoading: false, isAdmin: false };
+  return {
+    user: session?.user ?? null,
+    isLoading: status === 'loading',
+    isAdmin: session?.user?.role === 'admin',
+    isAuthenticated: status === 'authenticated',
+    signIn,
+    signOut,
+  };
 }
 
 export default useAuth;

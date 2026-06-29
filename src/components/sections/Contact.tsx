@@ -10,8 +10,7 @@ import { useTranslation } from '@/i18n';
 
 const METHODS = [
   { icon: Phone, label: 'Call Us', value: CONTACT.phone, href: `tel:${CONTACT.phone}`, color: '#3B5BFF' },
-  { icon: Mail, label: 'Primary Email', value: CONTACT.email1, href: `mailto:${CONTACT.email1}`, color: '#FF5A38' },
-  { icon: Mail, label: 'Secondary Email', value: CONTACT.email2, href: `mailto:${CONTACT.email2}`, color: '#7E54E9' },
+  { icon: Mail, label: 'Email', value: CONTACT.email, href: `mailto:${CONTACT.email}`, color: '#FF5A38' },
   { icon: MapPin, label: 'Office', value: CONTACT.address, href: '#', color: '#16A35C' },
 ];
 
