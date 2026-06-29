@@ -107,9 +107,12 @@ export function SoundWave({
         const x = (i / bars) * 800;
         // Clamp to a positive minimum — SVG <rect height> must be >= 0, and the
         // raw sine/cosine sum can otherwise dip negative.
-        const baseH = Math.max(
-          6,
-          40 + Math.sin(i * 0.3) * 50 + Math.cos(i * 0.5) * 30,
+        // Math.round() is essential: Math.sin/cos can differ in the last decimal
+        // between the Node server and the browser, which made the animation
+        // `values` strings mismatch and triggered a hydration warning. Rounding
+        // to whole numbers makes server and client output byte-identical.
+        const baseH = Math.round(
+          Math.max(6, 40 + Math.sin(i * 0.3) * 50 + Math.cos(i * 0.5) * 30),
         );
         return (
           <rect
@@ -287,29 +290,41 @@ export function ConcentricRings({
   color = 'currentColor',
   className = '',
 }: { color?: string; className?: string }) {
+  // Uses SMIL <animate> instead of framer-motion: animating the SVG `r`
+  // attribute through framer rendered `r="undefined"` on the server, throwing
+  // "<circle> attribute r: Expected length". SMIL is deterministic and SSR-safe.
   return (
     <svg viewBox="0 0 400 400" className={className}>
-      {[...Array(8)].map((_, i) => (
-        <motion.circle
-          key={i}
-          cx="200"
-          cy="200"
-          r={30 + i * 20}
-          fill="none"
-          stroke={color}
-          strokeWidth="1"
-          opacity={0.4 - i * 0.04}
-          animate={{
-            r: [30 + i * 20, 35 + i * 20, 30 + i * 20],
-            opacity: [0.4 - i * 0.04, 0.6 - i * 0.04, 0.4 - i * 0.04],
-          }}
-          transition={{
-            duration: 3 + i * 0.5,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
+      {[...Array(8)].map((_, i) => {
+        const r = 30 + i * 20;
+        const op = +(0.4 - i * 0.04).toFixed(2);
+        const dur = 3 + i * 0.5;
+        return (
+          <circle
+            key={i}
+            cx="200"
+            cy="200"
+            r={r}
+            fill="none"
+            stroke={color}
+            strokeWidth="1"
+            opacity={op}
+          >
+            <animate
+              attributeName="r"
+              values={`${r};${r + 5};${r}`}
+              dur={`${dur}s`}
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="opacity"
+              values={`${op};${+(op + 0.2).toFixed(2)};${op}`}
+              dur={`${dur}s`}
+              repeatCount="indefinite"
+            />
+          </circle>
+        );
+      })}
     </svg>
   );
 }

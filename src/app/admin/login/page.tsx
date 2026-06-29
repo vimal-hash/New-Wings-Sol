@@ -5,13 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
-// Security notes for this file:
-// - We show ONE generic error ("Invalid email or password") for every failure
-//   mode (no such email, wrong password, rate-limited mapped separately) so the
-//   form never lets an attacker enumerate valid accounts.
-// - Credentials are never logged. Do not add console.log of email/password.
-
-const MAX_CLIENT_ATTEMPTS = 3;
+// Security note: we show ONE generic error ("Invalid email or password") for
+// every failure mode so the form never lets an attacker enumerate accounts.
+// Credentials are never logged. Do not add console.log of email/password.
 
 function LoginForm() {
   const router = useRouter();
@@ -23,13 +19,10 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [attempts, setAttempts] = useState(0);
-
-  const isBlocked = attempts >= MAX_CLIENT_ATTEMPTS;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (isLoading || isBlocked) return;
+    if (isLoading) return;
 
     setIsLoading(true);
     setError(null);
@@ -43,14 +36,7 @@ function LoginForm() {
     setIsLoading(false);
 
     if (res?.error) {
-      const next = attempts + 1;
-      setAttempts(next);
-      // "Too many attempts" comes straight from the server-side rate limiter.
-      setError(
-        res.error === 'Too many attempts'
-          ? 'Too many attempts. Please wait and try again later.'
-          : 'Invalid email or password',
-      );
+      setError('Invalid email or password');
       return;
     }
 
@@ -95,7 +81,7 @@ function LoginForm() {
               autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading || isBlocked}
+              disabled={isLoading}
               className="w-full rounded-lg bg-black/40 border border-white/10 px-4 py-2.5 text-sm outline-none focus:border-cobalt-500 transition-colors disabled:opacity-50"
               placeholder="admin@newwingssolutions.com"
             />
@@ -113,7 +99,7 @@ function LoginForm() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading || isBlocked}
+                disabled={isLoading}
                 className="w-full rounded-lg bg-black/40 border border-white/10 px-4 py-2.5 pr-11 text-sm outline-none focus:border-cobalt-500 transition-colors disabled:opacity-50"
                 placeholder="••••••••••"
               />
@@ -134,18 +120,12 @@ function LoginForm() {
 
           <button
             type="submit"
-            disabled={isLoading || isBlocked}
+            disabled={isLoading}
             className="w-full flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cobalt-500 to-coral-500 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
           >
             {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
             {isLoading ? 'Signing in…' : 'Sign In'}
           </button>
-
-          {isBlocked && (
-            <p className="text-center text-xs text-yellow-300/80">
-              Too many attempts. Please wait before trying again.
-            </p>
-          )}
         </form>
       </div>
     </div>

@@ -8,8 +8,10 @@
 //   its own counter, so for stronger guarantees move this to a shared store
 //   (Upstash Redis, etc.). It is deliberately dependency-free for now.
 
-const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+// Relaxed for debugging/testing so logins aren't blocked while we diagnose.
+// TODO: tighten back to 5 / 15 min once auth is confirmed working in prod.
+const MAX_ATTEMPTS = 20;
+const WINDOW_MS = 1 * 60 * 1000; // 1 minute
 
 type Bucket = { count: number; resetTime: number };
 
