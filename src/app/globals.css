@@ -1,0 +1,290 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   THEME TOKENS
+   ============================================ */
+:root {
+  --bg: #FAFAF7;
+  --bg-elev: #FFFFFF;
+  --bg-soft: #F1F0EC;
+  --fg: #0B0F17;
+  --fg-muted: #4E5D75;
+  --fg-soft: #7C8BA1;
+  --border: rgba(11, 15, 23, 0.1);
+  --border-strong: rgba(11, 15, 23, 0.18);
+  --glass: rgba(255, 255, 255, 0.7);
+  --grain-opacity: 0.04;
+}
+
+.dark {
+  --bg: #070A11;
+  --bg-elev: #0B0F17;
+  --bg-soft: #141B28;
+  --fg: #F8F9FB;
+  --fg-muted: #B4BFCF;
+  --fg-soft: #7C8BA1;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --glass: rgba(20, 27, 40, 0.5);
+  --grain-opacity: 0.06;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+/* ============================================
+   THEME TRANSITION (anti-flicker)
+   Only applies AFTER hydration — next-themes adds .dark/.light to <html>.
+   Scoped to descendants of html.dark / html.light (never <html> itself)
+   so the initial paint has no transition and there is no theme flash.
+   ============================================ */
+html.dark *,
+html.dark *::before,
+html.dark *::after,
+html.light *,
+html.light *::before,
+html.light *::after {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--fg);
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+}
+
+::selection {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.bg-surface { background: var(--bg); }
+.bg-elev { background: var(--bg-elev); }
+.bg-soft { background: var(--bg-soft); }
+/* Inverted fill: dark pill in light theme, light pill in dark theme.
+   Pairs with text-bg / text-surface below (e.g. primary CTA buttons). */
+.bg-fg { background: var(--fg); }
+.text-fg { color: var(--fg); }
+.text-bg { color: var(--bg); }
+.text-surface { color: var(--bg); }
+.text-muted { color: var(--fg-muted); }
+.text-soft { color: var(--fg-soft); }
+.border-soft { border-color: var(--border); }
+.border-strong { border-color: var(--border-strong); }
+
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+}
+
+/* ============================================
+   MAGAZINE EDITORIAL TYPOGRAPHY
+   ============================================ */
+.editorial-hero {
+  font-family: var(--font-fraunces), serif;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  font-feature-settings: 'ss01', 'ss02';
+}
+
+.editorial-italic {
+  font-style: italic;
+  font-weight: 300;
+}
+
+.eyebrow {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.huge-number {
+  font-family: var(--font-fraunces), serif;
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  line-height: 0.85;
+  font-feature-settings: 'tnum';
+}
+
+/* ============================================
+   GRADIENT TEXT
+   ============================================ */
+.text-grad-editorial {
+  background: linear-gradient(135deg, #0B0F17 0%, #4E5D75 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dark .text-grad-editorial {
+  background: linear-gradient(135deg, #F8F9FB 0%, #B4BFCF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-grad-cinema {
+  background: linear-gradient(135deg, #E0142B 0%, #FF5A38 33%, #E8A800 66%, #2E5298 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: hue-shift 8s ease infinite;
+}
+
+@keyframes hue-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============================================
+   MARQUEE
+   ============================================ */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ============================================
+   CARD INTERACTIONS
+   ============================================ */
+.lift {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+  will-change: transform;
+}
+.lift:hover {
+  transform: translateY(-6px);
+}
+
+/* ============================================
+   SECTION SPACING — MAGAZINE EDITORIAL
+   ============================================ */
+.section-pad {
+  padding-top: clamp(6rem, 12vw, 10rem);
+  padding-bottom: clamp(6rem, 12vw, 10rem);
+}
+
+/* ============================================
+   BACKGROUNDS
+   ============================================ */
+.bg-grid-soft {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.bg-dots {
+  background-image: radial-gradient(circle, var(--border-strong) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* On dark colored sections, use white-tinted patterns */
+.bg-grid-light {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.bg-dots-light {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ============================================
+   GLOW SHADOWS
+   ============================================ */
+.glow-cobalt { box-shadow: 0 25px 60px -20px rgba(59, 91, 255, 0.35); }
+.glow-coral { box-shadow: 0 25px 60px -20px rgba(255, 90, 56, 0.35); }
+.glow-emerald { box-shadow: 0 25px 60px -20px rgba(22, 163, 92, 0.35); }
+.glow-lavender { box-shadow: 0 25px 60px -20px rgba(126, 84, 233, 0.35); }
+.glow-crimson { box-shadow: 0 25px 60px -20px rgba(224, 20, 43, 0.4); }
+.glow-navy { box-shadow: 0 25px 60px -20px rgba(13, 40, 97, 0.5); }
+.glow-mustard { box-shadow: 0 25px 60px -20px rgba(232, 168, 0, 0.4); }
+
+/* ============================================
+   BEAM/SHIMMER EFFECTS
+   ============================================ */
+.beam {
+  position: relative;
+  overflow: hidden;
+}
+.beam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 60%
+  );
+  transition: left 0.8s ease;
+}
+.beam:hover::after {
+  left: 100%;
+}
+
+/* Grain overlay */
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: var(--grain-opacity);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 1;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

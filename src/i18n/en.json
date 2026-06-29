@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "process": "Process",
+    "showcase": "Showcase",
+    "services": "Services",
+    "contact": "Contact",
+    "getQuote": "Get a Quote"
+  },
+  "hero": {
+    "tagline": "CINEMA REIMAGINED",
+    "title1": "Cinema,",
+    "title2": "reimagined",
+    "title3": "for tomorrow.",
+    "subtitle": "India's most trusted cinema equipment partner.",
+    "cta": "Explore Products",
+    "ctaSecondary": "View Our Work"
+  },
+  "contact": {
+    "badge": "LET'S BUILD TOGETHER",
+    "title1": "Ready to",
+    "title2": "transform",
+    "title3": "your theatre?",
+    "subtitle": "Whether it's a full renovation or a single upgrade — we'd love to hear from you.",
+    "name": "Your Name",
+    "email": "Email Address",
+    "company": "Theatre / Company",
+    "message": "Project Details",
+    "submit": "Send Message",
+    "success": "Message Sent! We'll be in touch.",
+    "response": "We typically respond within 2 business hours"
+  }
+}
