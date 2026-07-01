@@ -86,18 +86,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        // Diagnostic: reaching this line at all proves the callback ran as a
-        // POST (authorize is never invoked for the GET-downgrade case that
-        // produces "Callback for provider type credentials not supported").
-        console.error(
-          '[auth] authorize() entered',
-          JSON.stringify({
-            method: req?.method,
-            host: (req?.headers as Record<string, string> | undefined)?.host,
-            NEXTAUTH_URL: process.env.NEXTAUTH_URL ?? '(unset)',
-          }),
-        );
-
         const ip = clientIp(req?.headers as Record<string, string> | undefined);
 
         // 1. Rate-limit BEFORE doing any work (cheap, blocks brute force).
